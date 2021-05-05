@@ -100,13 +100,14 @@ public class Sql2oItemsDao implements ItemsDao {
         }
     }
 
-    public Items findByName(String name) {
+    public List<Items> findByName(String itemName) {
         try(Connection con = sql2o.open()){
-            return con.createQuery("SELECT * FROM items WHERE name=:name")
-                    .addParameter("name", name)
-                    .executeAndFetchFirst(Items.class);
+            return con.createQuery("SELECT * FROM items WHERE name=:itemName ORDER BY price ASC")
+                    .addParameter("itemName", itemName)
+                    .executeAndFetch(Items.class);
         }
     }
+
     @Override
     public void clearAll() {
         String sql = "DELETE from items";

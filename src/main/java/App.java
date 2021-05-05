@@ -100,7 +100,7 @@ public class App {
                 return gson.toJson(itemDao.getAll());
             }
             else {
-                return "{\"message\":\"I'm sorry, but no stores are currently listed in the database.\"}";
+                return "{\"message\":\"I'm sorry, but no items are currently listed in the database.\"}";
             }
         });
 
@@ -125,13 +125,16 @@ public class App {
                 return gson.toJson(itemDao.getAllStoresForItem(itemId));
             }
         });
-        get("/items/:name", "application/json", (req, res) -> {
+
+        get("/stores/items/:name", "application/json", (req, res) -> {
             String itemName = req.params("name");
-            Items itemsToFind = itemDao.findByName(itemName);
-            if (itemsToFind == null){
+
+            if (itemDao.findByName(itemName).size()  == 0 ){
                 throw new ApiException(404, String.format("No items with the name: \"%s\" exists", req.params("name")));
+
             }else {
-                return gson.toJson(itemName);
+                return gson.toJson(itemDao.findByName(itemName));
+
             }
         });
 
