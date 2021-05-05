@@ -100,6 +100,7 @@ public class Sql2oItemsDao implements ItemsDao {
         }
     }
 
+    @Override
     public List<Items> findByName(String itemName) {
         try(Connection con = sql2o.open()){
             return con.createQuery("SELECT * FROM items WHERE name=:itemName ORDER BY price ASC")
