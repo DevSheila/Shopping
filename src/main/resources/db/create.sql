@@ -5,6 +5,8 @@ CREATE TABLE IF NOT EXISTS stores
 (
     id      int PRIMARY KEY auto_increment,
     name    VARCHAR,
+    brand VARCHAR,
+    quantity VARCHAR,
     address VARCHAR,
     website VARCHAR
 );

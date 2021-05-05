@@ -5,11 +5,15 @@ import java.util.Objects;
 public class Items {
     private int id;
     private String name;
+    private String brand;
+    private String quantity;
     private int price;
     private int storeId;
 
-    public Items(String name, int price, int storeId) {
+    public Items(String name,String brand,String quantity, int price, int storeId) {
         this.name = name;
+        this.brand = brand;
+        this.quantity=quantity;
         this.price = price;
         this.storeId = storeId;
     }
@@ -28,6 +32,22 @@ public class Items {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public String getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(String quantity) {
+        this.quantity = quantity;
     }
 
     public int getPrice() {
