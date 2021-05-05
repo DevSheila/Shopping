@@ -78,7 +78,7 @@ public class Sql2oItemsDaoTest {
     }
 
     public Items setUpItems() {
-        Items item = new Items("Bread", 50, 1);
+        Items item = new Items("Bread", "festive", "half loaf",25,1);
         itemsDao.add(item);
         return item;
     }
