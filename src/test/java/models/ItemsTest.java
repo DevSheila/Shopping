@@ -63,6 +63,6 @@ public class ItemsTest {
     }
 
     public Items setUpItems(){
-        return new Items("Bread",50,1);
+        return new Items("Bread","united","15",50,1);
     }
 }
