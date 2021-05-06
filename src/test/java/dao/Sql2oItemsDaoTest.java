@@ -26,7 +26,19 @@ public class Sql2oItemsDaoTest {
 
     @After
     public void tearDown() throws Exception {
-        conn.close();
+        String connectionString = "jdbc:postgresql://localhost:5432/shopping";
+        Sql2o sql2o = new Sql2o(connectionString, "postgres", "Password");
+        try (Connection con = sql2o.open()) {
+            //delete data within table after each test
+            String deleteItemsQuery = "DELETE FROM items *;";
+            con.createQuery(deleteItemsQuery).executeUpdate();
+            //delete data within table after each test
+            String deleteStoresQuery = "DELETE FROM stores *";
+            con.createQuery(deleteStoresQuery).executeUpdate();
+            //delete data within table after each test
+            String deleteStoreItemsQuery = "DELETE FROM stores_items *";
+            con.createQuery(deleteStoreItemsQuery).executeUpdate();
+        }
     }
 
     @Test
@@ -76,6 +88,27 @@ public class Sql2oItemsDaoTest {
 
         assertEquals(2, itemsDao.getAllStoresForItem(testItems.getId()).size());
     }
+
+    @Test
+    public void findByName() {
+        Items testItem = setUpItems();
+        Items testItem2 = setUpItems();
+
+        assertEquals(2, itemsDao.findByName("Bread").size());
+    }
+
+    @Test
+    public void getAllItemsForAStore() {
+        Items testItem = setUpItems();
+
+        Items otherItem = setUpItems();
+
+        Store testStore = setUpStore();
+
+        Items[] items = {testItem, otherItem};
+        assertEquals(Arrays.asList(items), storeDao.getAllItemsByStore(testStore.getId()));
+    }
+
 
     public Items setUpItems() {
         Items item = new Items("Bread", "festive", "half loaf",25,1);
