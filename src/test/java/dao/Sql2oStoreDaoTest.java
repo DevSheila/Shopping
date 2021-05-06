@@ -86,7 +86,7 @@ public class Sql2oStoreDaoTest {
     }
 
     public Items setUpItems() {
-        Items item = new Items("Bread", 50, 1);
+        Items item = new Items("Bread", "festive","62", 1,1);
         itemsDao.add(item);
         return item;
     }
