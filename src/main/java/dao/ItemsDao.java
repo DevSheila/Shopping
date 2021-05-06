@@ -15,6 +15,7 @@ public interface ItemsDao {
     List<Items> getAll();
     List<Store> getAllStoresForItem(int id);
     Items findById(int id);
+    List<Items> getAllByBrand(String brand);
     List<Items> findByName(String name);
     //update
 
