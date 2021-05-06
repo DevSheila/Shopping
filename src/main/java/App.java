@@ -9,6 +9,8 @@ import models.Items;
 import models.Store;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
+import spark.ModelAndView;
+import spark.template.handlebars.HandlebarsTemplateEngine;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -137,7 +139,6 @@ public class App {
 
             }
         });
-
 
         exception(ApiException.class, (exception, req, res) -> {
             ApiException err = exception;
