@@ -119,9 +119,9 @@
                 <configuration>
                     <jdkVersion>1.8</jdkVersion>
                     <!-- Change this to YOUR application name! -->
-                    <appName>wildlifetracker0102</appName>
+                    <appName>shoppingapp0102</appName>
                     <processTypes>
-                        <web>java -jar target/Wildlife_tracker-1.0-jar-with-dependencies.jar</web>
+                        <web>java -jar target/Shopping-1.0-jar-with-dependencies.jar</web>
                     </processTypes>
                 </configuration>
             </plugin>
