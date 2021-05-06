@@ -101,8 +101,17 @@ public class Sql2oItemsDao implements ItemsDao {
     }
 
     @Override
+    public List<Items> getAllByBrand(String brand) {
+        try (Connection con = sql2o.open()) {
+            return con.createQuery("SELECT * FROM items WHERE brand = :brand ORDER BY price ASC")
+                    .addParameter("brand", brand)
+                    .executeAndFetch(Items.class);
+        }
+    }
+
+    @Override
     public List<Items> findByName(String itemName) {
-        try(Connection con = sql2o.open()){
+        try (Connection con = sql2o.open()) {
             return con.createQuery("SELECT * FROM items WHERE name=:itemName ORDER BY price ASC")
                     .addParameter("itemName", itemName)
                     .executeAndFetch(Items.class);
