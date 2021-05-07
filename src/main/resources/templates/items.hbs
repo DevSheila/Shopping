@@ -1,0 +1,47 @@
+{{#partial "styles"}}
+    <!--    Custom index page css-->
+    <link rel="stylesheet" href="/style.css">
+{{/partial}}
+
+{{#partial "content"}}
+    {{# if items}}
+
+        <form action="/items/searchItem" method="POST">
+            <div class="search_wrap search_wrap_3">
+
+                <div class="search_box">
+                    <input type="text" name="inputName" id="inputName"class="input" placeholder="search items .......">
+                    <div class="btn btn_common">
+                        <i class="fas fa-search" onclick="window.location= '/items/searchItem'"></i>
+                    </div>
+                </div>
+            </div>
+        </form>
+    <table class = "content-table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Board</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Store</th>
+        </tr>
+        </thead>
+        <tbody>
+            {{#each items}}
+                <tr>
+                    <td>{{name}}</td>
+                    <td>{{brand}}</td>
+                    <td>{{quantity}}</td>
+                    <td>{{price}}</td>
+                    <td data-label = "#" ><a href="/stores/{{storeId}}" class="btn" >Go to store</a>  </td>
+                </tr>
+            {{/each}}
+
+        </tbody>
+    </table>
+
+    {{/if}}
+
+{{/partial}}
+{{>nav.hbs}}

@@ -18,6 +18,8 @@ public class Store {
         this.address = address;
         this.website = website;
     }
+    public Store() {
+    }
 
     public int getId() {
         return id;

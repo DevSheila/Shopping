@@ -1,150 +1,150 @@
-
-
-
-import com.google.gson.Gson;
-import dao.Sql2oItemsDao;
-import dao.Sql2oStoreDao;
-import exceptions.ApiException;
-
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import models.Items;
 import models.Store;
-import org.sql2o.Connection;
-import org.sql2o.Sql2o;
-//import spark.ModelAndView;
-//import spark.template.handlebars.HandlebarsTemplateEngine;
+import spark.template.handlebars.HandlebarsTemplateEngine;
+import spark.ModelAndView;
 
+
+import java.net.HttpURLConnection;
+import java.util.Arrays;
 import java.util.HashMap;
+
+import java.net.URI;
+import java.net.HttpURLConnection;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static spark.Spark.*;
 
 public class App {
-
+    static int getHerokuAssignedPort() {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        if (processBuilder.environment().get("PORT") != null) {
+            return Integer.parseInt(processBuilder.environment().get("PORT"));
+        }
+        return 4567;
+    }
+    private static HttpURLConnection connection;
+    private static Object HttpURLConnection;
+    private static final String ITEMS_API_URL ="http://3263e75dc6b8.ngrok.io/items";
+    private static final String STORES_API_URL ="http://3263e75dc6b8.ngrok.io/stores";
+    private static final String STOREID_API_URL ="http://3263e75dc6b8.ngrok.io/stores/";
+    private static final String ITEMNAME_API_URL ="http://3263e75dc6b8.ngrok.io/items/search/";
     public static void main(String[] args) {
 
-        Sql2oItemsDao itemDao;
-        Sql2oStoreDao storeDao;
-        Connection conn;
-        Gson gson = new Gson();
-        String connectionString = "jdbc:postgresql://localhost:5432/shopping";
-        Sql2o sql2o = new Sql2o(connectionString, "postgres", "");
+        port(getHerokuAssignedPort());
+        staticFileLocation("/public");
+        String main = "templates/main.hbs";
+        get("/",(request, response) ->{
+            Map<String,Object> model = new HashMap<String,Object>();
 
-        storeDao = new Sql2oStoreDao(sql2o);
-        itemDao = new Sql2oItemsDao(sql2o);
-        conn = sql2o.open();
+            return new ModelAndView(model, "main.hbs");
 
-        //CREATE
-        post("/stores/new", "application/json", (req, res) -> {
-            Store store = gson.fromJson(req.body(), Store.class);
-            storeDao.add(store);
-            res.status(201);
-            return gson.toJson(store);
-        });
-        post("/items/new", "application/json", (req, res) -> {
-            Items item = gson.fromJson(req.body(), Items.class);
-            itemDao.add(item);
-            res.status(201);
-            return gson.toJson(item);
-        });
-
-        //READ
-        get("/stores", "application/json", (req, res) -> {
-            if (storeDao.getAll().size() > 0) {
-                return gson.toJson(storeDao.getAll());
-            } else {
-                return "{\"message\":\"I'm sorry, but no stores are currently listed in the database.\"}";
-            }
-        });
-
-        get("/stores/:id", "application/json", (req, res) -> {
-            int storeId = Integer.parseInt(req.params("id"));
-            Store storeToFind = storeDao.findById(storeId);
-            if (storeToFind == null) {
-                throw new ApiException(404, String.format("No stores with the id: \"%s\" exists", req.params("id")));
-            }
-            return gson.toJson(storeToFind);
-        });
-        get("/stores/:id/items", "application/json", (req, res) -> {
-            int storeId = Integer.parseInt(req.params("id"));
-            Store storeToFind = storeDao.findById(storeId);
-            if (storeToFind == null) {
-                throw new ApiException(404, String.format("No store with the id: \"%s\" exists", req.params("id")));
-            } else if (storeDao.getAllItemsByStore(storeId).size() == 0) {
-                return "{\"message\":\"I'm sorry, but no items are listed for this store.\"}";
-            } else {
-                return gson.toJson(storeDao.getAllItemsByStore(storeId));
-            }
-        });
-
-        get("/stores/:storeId/items/:itemId", "application/json", (req, res) -> {
-            int storeId = Integer.parseInt(req.params("storeId"));
-            int itemId = Integer.parseInt(req.params("itemId"));
-            Store store = storeDao.findById(storeId);
-            Items item = itemDao.findById(itemId);
+        },new HandlebarsTemplateEngine());
 
 
-            if (store != null && item != null) {
-                itemDao.addItemToStore(item, store);
-                res.status(201);
-                return gson.toJson(String.format("Store '%s' and Item '%s' have been associated", item.getName(), store.getName()));
-            } else {
-                throw new ApiException(404, String.format("Store or Item does not exist"));
-            }
-        });
 
-        get("/items", "application/json", (req, res) -> {
-            if (itemDao.getAll().size() > 0) {
-                return gson.toJson(itemDao.getAll());
-            }
-            else {
-                return "{\"message\":\"I'm sorry, but no items are currently listed in the database.\"}";
-            }
-        });
+        get("/items", (request, response) ->{
 
-        get("/items/:id", "application/json", (req, res) -> {
-            int itemId = Integer.parseInt(req.params("id"));
-            Items itemToFind = itemDao.findById(itemId);
-            if (itemToFind == null) {
-                throw new ApiException(404, String.format("No items with the id: \"%s\" exists", req.params("id")));
-            }
-            return gson.toJson(itemToFind);
-        });
-        get("/items/:id/stores", "application/json", (req, res) -> {
-            int itemId = Integer.parseInt(req.params("id"));
-            Items itemToFind = itemDao.findById(itemId);
-            if (itemToFind == null) {
-                throw new ApiException(404, String.format("No items with the id: \"%s\" exists", req.params("id")));
-            } else if (itemDao.getAllStoresForItem(itemId).size() == 0) {
-                return "{\"message\":\"I'm sorry, but no stores are listed for this item.\"}";
-            } else {
-                return gson.toJson(itemDao.getAllStoresForItem(itemId));
-            }
-        });
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest requests = HttpRequest.newBuilder()
+                    .GET()
+                    .header("accept","application/json")
+                    .uri(URI.create(ITEMS_API_URL))
+                    .build();
+            HttpResponse<String> responses = client.send(requests,HttpResponse.BodyHandlers.ofString());
+            //parse JSON to objects
 
-        get("/stores/items/:name", "application/json", (req, res) -> {
-            String itemName = req.params("name");
 
-            if (itemDao.findByName(itemName).size() == 0) {
-                throw new ApiException(404, String.format("No items with the name: \"%s\" exists", req.params("name")));
+            ObjectMapper mapper = new ObjectMapper();
+            List<Items> item = mapper.readValue(responses.body(), new TypeReference<List<Items>>() {});
 
-            } else {
-                return gson.toJson(itemDao.findByName(itemName));
+            item.forEach(System.out::println);
 
-            }
-        });
+            Map<String, Object> model = new HashMap<>();
+            model.put("items", item);
+//            System.out.println(posts);
+            return new ModelAndView(model, "items.hbs");
+        } , new HandlebarsTemplateEngine());
 
-        exception(ApiException.class, (exception, req, res) -> {
-            ApiException err = exception;
-            Map<String, Object> jsonMap = new HashMap<>();
-            jsonMap.put("status", err.getStatusCode());
-            jsonMap.put("errorMessage", err.getMessage());
-            res.type("application/json");
-            res.status(err.getStatusCode());
-            res.body(gson.toJson(jsonMap));
-        });
-        after((req, res) -> {
-            res.type("application/json");
-        });
+
+        get("/stores", (request, response) ->{
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest requests = HttpRequest.newBuilder()
+                    .GET()
+                    .header("accept","application/json")
+                    .uri(URI.create(STORES_API_URL))
+                    .build();
+            HttpResponse<String> responses = client.send(requests,HttpResponse.BodyHandlers.ofString());
+            //parse JSON to objects
+
+            ObjectMapper mapper = new ObjectMapper();
+            List<Store> stores = mapper.readValue(responses.body(), new TypeReference<List<Store>>() {});
+
+            stores.forEach(System.out::println);
+
+            Map<String, Object> model = new HashMap<>();
+            model.put("stores", stores);
+            return new ModelAndView(model, "stores.hbs");
+        } , new HandlebarsTemplateEngine());
+
+
+
+        get("/stores/:storeid", (request, response) ->{
+            int id = Integer.parseInt(request.params("storeid"));
+            System.out.println(id);
+            String iD =Integer.toString(id);
+
+//            int id = Integer.parseInt(request.params("storeId"));
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest requests = HttpRequest.newBuilder()
+                    .GET()
+                    .header("accept","application/json")
+                    .uri(URI.create(STOREID_API_URL+iD))
+                    .build();
+            HttpResponse<String> responses = client.send(requests,HttpResponse.BodyHandlers.ofString());
+            //parse JSON to objects
+
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+             List<Store> stores = mapper.readValue(responses.body(),new TypeReference<List<Store>>() {});
+
+            stores.forEach(System.out::println);
+
+            Map<String, Object> model = new HashMap<>();
+            model.put("stores", stores);
+            return new ModelAndView(model, "stores.hbs");
+        } , new HandlebarsTemplateEngine());
+
+        post("items/searchItem", (request, response) ->{
+            String itemName = request.queryParams("inputName");
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest requests = HttpRequest.newBuilder()
+                    .GET()
+                    .header("accept","application/json")
+                    .uri(URI.create(ITEMNAME_API_URL+itemName))
+                    .build();
+            HttpResponse<String> responses = client.send(requests,HttpResponse.BodyHandlers.ofString());
+            //parse JSON to objects
+
+            ObjectMapper mapper = new ObjectMapper();
+            List<Items> searchItem = mapper.readValue(responses.body(), new TypeReference<List<Items>>() {});
+
+            searchItem.forEach(System.out::println);
+
+            Map<String, Object> model = new HashMap<>();
+            model.put("items", searchItem);
+            return new ModelAndView(model, "items.hbs");
+        } , new HandlebarsTemplateEngine());
+
 
     }
 }

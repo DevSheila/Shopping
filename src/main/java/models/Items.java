@@ -18,6 +18,10 @@ public class Items {
         this.storeId = storeId;
     }
 
+
+    public Items() {
+    }
+
     public int getId() {
         return id;
     }

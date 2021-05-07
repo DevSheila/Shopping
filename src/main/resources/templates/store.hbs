@@ -1,0 +1,45 @@
+{{#partial "styles"}}
+    <!--    Custom index page css-->
+    <link rel="stylesheet" href="/style.css">
+{{/partial}}
+
+{{#partial "content"}}
+    <div class="search_wrap search_wrap_3">
+        <div class="search_box">
+            <input type="text" class="input" placeholder="search items .......">
+            <div class="btn btn_common">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+    </div>
+    <table class = "content-table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Board</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Store</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{# if items}}
+            {{#each items}}
+                <tr>
+                    <td>{{name}}</td>
+                    <td>{{brand}}</td>
+                    <td>{{quantity}}</td>
+                    <td>{{price}}</td>
+                    <td>{{storeId}}</td>
+
+                </tr>
+            {{/each}}
+        {{/if}}
+
+
+        </tbody>
+    </table>
+
+
+{{/partial}}
+{{>nav.hbs}}

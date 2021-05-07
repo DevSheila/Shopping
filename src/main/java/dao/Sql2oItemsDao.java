@@ -35,6 +35,14 @@ public class Sql2oItemsDao implements ItemsDao {
         }
     }
 
+    public List<Items> findByStoreId(int storeId) {
+        try(Connection con = sql2o.open()){
+            return con.createQuery("SELECT * FROM items WHERE storeid=:storeId ")
+                    .addParameter("storeId", storeId)
+                    .executeAndFetch(Items.class);
+        }
+    }
+
     @Override
     public void addItemToStore(Items item, Store store) {
         String sql = "INSERT INTO stores_items (storeid, itemid) VALUES (:storeId, :itemId)";

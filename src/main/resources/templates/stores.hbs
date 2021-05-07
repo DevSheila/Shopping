@@ -1,0 +1,35 @@
+{{#partial "styles"}}
+    <!--    Custom index page css-->
+    <link rel="stylesheet" href="/style.css">
+{{/partial}}
+
+{{#partial "content"}}
+    <!--    ADDING STORES FOR DISPLAY -->
+    <table class = "content-table-store">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Website</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#if stores}}
+            {{#each stores}}
+                <tr>
+                    <td>{{name}}</td>
+                    <td>{{address}}</td>
+                    <td><a href="/view/stores/{{id}}">{{website}}</a></td>
+                </tr>
+            {{/each}}
+        {{/if}}
+
+
+    </table>
+
+
+
+
+
+{{/partial}}
+{{>nav.hbs}}
