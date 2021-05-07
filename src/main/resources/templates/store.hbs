@@ -4,16 +4,28 @@
 {{/partial}}
 
 {{#partial "content"}}
-    <div class="search_wrap search_wrap_3">
-        <div class="search_box">
-            <input type="text" class="input" placeholder="search items .......">
-            <div class="btn btn_common">
-                <i class="fas fa-search"></i>
-            </div>
-        </div>
-    </div>
+<!--    <div class="search_wrap search_wrap_3">-->
+<!--        <div class="search_box">-->
+<!--            <input type="text" class="input" placeholder="search items .......">-->
+<!--            <div class="btn btn_common">-->
+<!--                <i class="fas fa-search"></i>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<th>
+    {{# if store}}
+
+                <h5>{{name}}</h5>
+                <h5>{{address}}</h5>
+                <h5>{{website}}</h5>
+
+
+    {{/if}}
+</th>
+
     <table class = "content-table">
         <thead>
+
         <tr>
             <th>Name</th>
             <th>Board</th>

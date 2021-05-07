@@ -33,10 +33,12 @@ public class App {
     }
     private static HttpURLConnection connection;
     private static Object HttpURLConnection;
-    private static final String ITEMS_API_URL ="http://3263e75dc6b8.ngrok.io/items";
-    private static final String STORES_API_URL ="http://3263e75dc6b8.ngrok.io/stores";
-    private static final String STOREID_API_URL ="http://3263e75dc6b8.ngrok.io/stores/";
-    private static final String ITEMNAME_API_URL ="http://3263e75dc6b8.ngrok.io/items/search/";
+    private static final String ITEMS_API_URL ="http://5855acc67433.ngrok.io/items";
+    private static final String STORES_API_URL ="http://5855acc67433.ngrok.io/stores";
+    private static final String STOREID_API_URL ="http://5855acc67433.ngrok.io/stores/";
+    private static final String ITEMNAME_API_URL ="http://5855acc67433.ngrok.io/items/search/";
+    private static final String ITEMBYSTOREID_API_URL ="http://5855acc67433.ngrok.io/stores/";
+
     public static void main(String[] args) {
 
         port(getHerokuAssignedPort());
@@ -103,7 +105,6 @@ public class App {
             System.out.println(id);
             String iD =Integer.toString(id);
 
-//            int id = Integer.parseInt(request.params("storeId"));
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest requests = HttpRequest.newBuilder()
                     .GET()
@@ -111,17 +112,30 @@ public class App {
                     .uri(URI.create(STOREID_API_URL+iD))
                     .build();
             HttpResponse<String> responses = client.send(requests,HttpResponse.BodyHandlers.ofString());
-            //parse JSON to objects
 
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
              List<Store> stores = mapper.readValue(responses.body(),new TypeReference<List<Store>>() {});
 
+            HttpClient itemsClient = HttpClient.newHttpClient();
+            HttpRequest itemsRequests = HttpRequest.newBuilder()
+                    .GET()
+                    .header("accept","application/json")
+                    .uri(URI.create(STOREID_API_URL+iD+"/items"))
+                    .build();
+            HttpResponse<String> itemsResponses = itemsClient.send(itemsRequests,HttpResponse.BodyHandlers.ofString());
+
+            ObjectMapper itemsMapper = new ObjectMapper();
+            itemsMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+            List<Items> items = mapper.readValue(itemsResponses.body(),new TypeReference<List<Items>>() {});
+
+
             stores.forEach(System.out::println);
 
             Map<String, Object> model = new HashMap<>();
-            model.put("stores", stores);
-            return new ModelAndView(model, "stores.hbs");
+            model.put("store", stores);
+            model.put("items",items);
+            return new ModelAndView(model, "store.hbs");
         } , new HandlebarsTemplateEngine());
 
         post("items/searchItem", (request, response) ->{
