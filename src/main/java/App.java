@@ -13,17 +13,17 @@ import java.util.Map;
 import static spark.Spark.*;
 
 public class App {
-    static int getHerokuAssignedPort() {
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        if (processBuilder.environment().get("PORT") != null) {
-            return Integer.parseInt(processBuilder.environment().get("PORT"));
-        }
-        return 4567; //return default port if heroku-port isn't set (i.e. on localhost)
-    }
+//    static int getHerokuAssignedPort() {
+//        ProcessBuilder processBuilder = new ProcessBuilder();
+//        if (processBuilder.environment().get("PORT") != null) {
+//            return Integer.parseInt(processBuilder.environment().get("PORT"));
+//        }
+//        return 4567; //return default port if heroku-port isn't set (i.e. on localhost)
+//    }
 
     public static void main(String[] args) {
 
-        port(getHerokuAssignedPort());
+//        port(getHerokuAssignedPort());
         staticFileLocation("/public");
 
         Sql2oItemsDao itemDao;
@@ -31,11 +31,11 @@ public class App {
         Connection conn;
         Gson gson = new Gson();
 
-        String connectionString = "jdbc:postgresql://ec2-52-87-107-83.compute-1.amazonaws.com:5432/dc04vf9j5qb3g5";
-        Sql2o sql2o = new Sql2o(connectionString, "ohypnznmmpragr", "206b9a6ca39927ad20f09d316bf2d8e773cd93cc520509aee42c279981fb3ecc"); //!
+//        String connectionString = "jdbc:postgresql://ec2-52-87-107-83.compute-1.amazonaws.com:5432/dc04vf9j5qb3g5";
+//        Sql2o sql2o = new Sql2o(connectionString, "ohypnznmmpragr", "206b9a6ca39927ad20f09d316bf2d8e773cd93cc520509aee42c279981fb3ecc"); //!
 
-//        String connectionString = "jdbc:postgresql://localhost:5432/shopping";
-//        Sql2o sql2o = new Sql2o(connectionString, "postgres", "Password");
+        String connectionString = "jdbc:postgresql://localhost:5432/shopping";
+        Sql2o sql2o = new Sql2o(connectionString, "postgres", "Password");
 
         storeDao = new Sql2oStoreDao(sql2o);
         itemDao = new Sql2oItemsDao(sql2o);
@@ -58,7 +58,11 @@ public class App {
         //READ
 
         get("/","application/json", (request, response) -> {
-            return "Welcome to our api";
+            if (itemDao.getAll().size() > 0) {
+                return gson.toJson(itemDao.getAll());
+            } else {
+                return "{\"message\":\"I'm sorry, but no items are currently listed in the database.\"}";
+            }
         });
 
         get("/stores", "application/json", (req, res) -> {
@@ -134,17 +138,20 @@ public class App {
             }
         });
 
-        get("/stores/items/:name", "application/json", (req, res) -> {
+        get("/items/search/:name", "application/json", (req, res) -> {
             String itemName = req.params("name");
 
             if (itemDao.findByName(itemName).size() == 0) {
                 throw new ApiException(404, String.format("No items with the name: \"%s\" exists", req.params("name")));
 
+            }else if(itemDao.findByName(itemName)==null){
+                throw new ApiException(404, String.format("There are no items matching search parameters"));
             } else {
                 return gson.toJson(itemDao.findByName(itemName));
 
             }
         });
+
 
         exception(ApiException.class, (exception, req, res) -> {
             ApiException err = exception;

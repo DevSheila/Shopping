@@ -134,7 +134,7 @@
                     <!-- Change this to YOUR application name! -->
                     <appName>okoa-shopping</appName>
                     <processTypes>
-                        <web>java -jar target/okoa-shopping-1.0-jar-with-dependencies.jar</web>
+                        <web>java -jar target/okoa-shoppingr-1.0-jar-with-dependencies.jar</web>
                     </processTypes>
                 </configuration>
             </plugin>

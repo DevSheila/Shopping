@@ -8,6 +8,7 @@ import org.sql2o.Sql2oException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class Sql2oItemsDao implements ItemsDao {
     private final Sql2o sql2o;
@@ -111,8 +112,10 @@ public class Sql2oItemsDao implements ItemsDao {
 
     @Override
     public List<Items> findByName(String itemName) {
+        String comp = "'"+itemName+"_'";
+        String query = "SELECT * FROM items WHERE LOWER(name) LIKE '"+itemName.toLowerCase(Locale.ROOT)+"%' OR LOWER(name) =LOWER(:itemName) ORDER BY price ASC";
         try (Connection con = sql2o.open()) {
-            return con.createQuery("SELECT * FROM items WHERE name=:itemName ORDER BY price ASC")
+            return con.createQuery(query)
                     .addParameter("itemName", itemName)
                     .executeAndFetch(Items.class);
         }
